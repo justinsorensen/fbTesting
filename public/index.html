@@ -1,0 +1,143 @@
+
+
+<div id="fb-root"></div>
+
+<div id="login" style="visibility: hidden">
+  <button onclick="login()">Login with Facebook</button>
+</div>
+
+<div id="main" style="visibility: hidden">
+  You're logged in to Facebook and you have authorized this app.
+</div>
+
+<div>
+      <img id="image"/>
+      <div id="name"></div>
+</div>
+	
+<div id="login" style="visibility: visible">
+  <button onclick="whoami()">What's my name?</button>
+</div>
+
+<script>
+  window.app = {};
+
+  function login() {
+    FB.login(function(response) {
+      if (response.authResponse) {
+          // connected
+        app.uid = response.authResponse.userID;
+        buildMain();
+        viewMain();
+      } else {
+          // cancelled
+        viewLogin();
+      }
+    });
+  }
+  
+
+  /*function buildMain() {
+    var img = document.createElement('img');		//show picture
+	//img.src = 'http://graph.facebook.com/me/picture?type=large';
+    img.src = 'http://graph.facebook.com/' + app.uid + '/picture?type=large';
+	document.getElementById('main').appendChild(img);
+	
+	var name = document.getElementById('name');
+	name.innerHTML = 'http://graph.facebook.com/' + app.uid + '?fields=first_name';
+	
+	
+	//var name = document.createElement('div');
+	//name.src = 'http://graph.facebook.com/' + app.uid + '?fields=first_name';
+	//document.getElementById('name').innerHTML = name;
+
+	/*FB.api('/me', function(response) {			//saving for reference
+			alert("Name: "+ response.name + "\n First name: "+ response.first_name + " " + "ID: "+response.id);
+			var img_link = "http://graph.facebook.com/"+response.id+"/picture"   
+	});
+  }*/
+  
+  function buildMain() {
+	FB.api('/me', function(user) {
+	  if (user) {
+		var image = document.getElementById('image');
+		image.src = 'http://graph.facebook.com/' + user.id + '/picture?type=large';
+		var name = document.getElementById('name');
+		name.innerHTML = user.name
+	  }
+	});
+  
+  }
+  
+  /*function doStuff() {
+		FB.api('/me', function(user) {
+            if (user) {
+              var image = document.getElementById('image');
+              image.src = 'https://graph.facebook.com/' + user.id + '/picture';
+              var name = document.getElementById('name');
+              name.innerHTML = user.name
+            }
+          });
+  }*/
+
+  function viewLogin() {
+    document.getElementById('main').style.visibility = 'hidden';
+    document.getElementById('login').style.visibility = 'visible';
+  }
+
+  function viewMain() {
+    document.getElementById('main').style.visibility = 'visible';
+    document.getElementById('login').style.visibility = 'hidden';
+  }
+
+
+  // Additional JS functions here
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '581181135247559', 
+      channelUrl : '//localhost:5000/public_root/channel.html', 
+      status     : false,  // check login status
+      cookie     : false,  // enable cookies to allow the server to access the session
+      xfbml      : false   // parse XFBML
+    });
+	
+	/*FB.api('/me', function(response) {
+            if (response) {
+              var image = document.getElementById('image');
+              image.src = 'https://graph.facebook.com/' + response.id + '/picture';
+              var name = document.getElementById('name');
+              name.innerHTML = response.name
+            }
+    });*/
+	
+    FB.getLoginStatus(function(response) {
+      if (response.status === 'connected') {
+        // logged in and authorized
+        app.uid = response.authResponse.userID;
+        buildMain();
+        viewMain();
+      } else if (response.status === 'not_authorized') {
+        // logged in and not authorized
+        viewLogin();
+      } else {
+        // not logged in
+        viewLogin();
+      }
+    });
+  };
+
+  // Load the SDK Asynchronously
+  (function(d){
+     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement('script'); js.id = id; js.async = true;
+     js.src = "//connect.facebook.net/en_US/all.js";
+     ref.parentNode.insertBefore(js, ref);
+   }(document));
+</script>
+
+
+<div align="center">
+      <img id="image"/>
+      <div id="name"></div>
+    </div>
